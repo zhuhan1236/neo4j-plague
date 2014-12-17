@@ -33,9 +33,7 @@ public class InCountrySpread extends Spread{
         }
 
         int probInfected = (int)(probability * infectedPopulation);
-        int newInfected = (int)(probInfected * (1 - (float) infectedPopulation / population));
-
-        return newInfected;
+        return (int)(probInfected * (1 - (float) infectedPopulation / population));
     }
 
 }
