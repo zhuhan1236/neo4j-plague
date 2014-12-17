@@ -6,4 +6,8 @@ package plagueWorld.spread;
 public abstract class Spread {
     public static int coldResistance = 1;
     public static int hotResistance = 1;
+    public static int airSpreadLevel = 1;
+    public static int waterSpreadLevel = 1;
+    public static int landSpreadLevel = 1;
+    public static int inCountrySpreadLevel = 1;
 }

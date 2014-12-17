@@ -10,9 +10,9 @@ import java.util.List;
  */
 public class Country {
     public String name;
-    public boolean infection;
-    public double area;
     public int population;
+    public int infectedPopulation;
     public String location; //tropical temperate boreal
+    public String populationDensity; //high mid low
     public List<Connection> borders;
 }
