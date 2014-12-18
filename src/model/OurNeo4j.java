@@ -27,17 +27,19 @@ import plagueWorld.connection.LandConnection;
 import plagueWorld.connection.OceanConnection;
 
 public class OurNeo4j {
-	private static final String DB_PATH = "target/neo4j-hello-db";
+	private static final String DB_PATH = "/Users/yingapple/Documents/neo4j data files/plague";
 	GraphDatabaseService graphDb;
 	Relationship relationship;
+	ExecutionEngine engine;
 	
 	private static enum RelTypes implements RelationshipType
     {
         Arrived
     }
 	//get all nodes in G
+	//pass
 	public ArrayList<Country> getAllNodesinDatabase(){
-		ExecutionEngine engine = new ExecutionEngine( graphDb );
+		//engine = new ExecutionEngine( graphDb );
 		ExecutionResult result;
 		ArrayList<Country> ac = new ArrayList<>();
 		try ( Transaction ignored = graphDb.beginTx() )
@@ -52,7 +54,7 @@ public class OurNeo4j {
                 // not from the n.name in this case.
                 Country newC = new Country();
                 //need id shuxing
-                newC.name = (String) node.getProperty("name");
+                newC.name = (String) node.getProperty("countryName");
                 ac.add(newC);
             }
             // END SNIPPET: items
@@ -62,42 +64,47 @@ public class OurNeo4j {
 	
 	
 	public ArrayList<Connection> getAllConnectionOfCountry(long cId){
-		Node n = graphDb.getNodeById(cId);
-		Iterator<Relationship> rs = n.getRelationships().iterator();
+		Iterator<Relationship> rs;
 		ArrayList<Connection> ac = new ArrayList<>();
 		String m;
-		while (rs.hasNext()){
-			Relationship temp = rs.next();
-			Node leftN = temp.getEndNode();
-			Node rightN = temp.getStartNode();
-			m = (String) temp.getProperty("connectionMethod");
-			if (m == "Air"){
-				AirConnection acn = new AirConnection();
-				acn.leftCountry = new Country();
-				acn.leftCountry.name = (String) leftN.getProperty("countryName");
-				acn.rightCountry = new Country();
-				acn.rightCountry.name = (String) rightN.getProperty("countryName");
-				ac.add(acn);
-			}else if(m =="Land"){
-				LandConnection lcn = new LandConnection();
-				lcn.leftCountry = new Country();
-				lcn.leftCountry.name = (String) leftN.getProperty("countryName");
-				lcn.rightCountry = new Country();
-				lcn.rightCountry.name = (String) rightN.getProperty("countryName");
-				ac.add(lcn);
-			}else if(m == "Ocean"){
-				OceanConnection ocn = new OceanConnection();
-				ocn.leftCountry = new Country();
-				ocn.leftCountry.name = (String) leftN.getProperty("countryName");
-				ocn.rightCountry = new Country();
-				ocn.rightCountry.name = (String) rightN.getProperty("countryName");
-				ac.add(ocn);
+		try ( Transaction tx = graphDb.beginTx()){
+			Node n = graphDb.getNodeById(cId);
+			rs = n.getRelationships().iterator();
+			
+			while (rs.hasNext()){
+				Relationship temp = rs.next();
+				Node leftN = temp.getStartNode();
+				Node rightN = temp.getEndNode();
+				m = (String) temp.getProperty("connectionMethod");
+				if (m == "Air"){
+					AirConnection acn = new AirConnection();
+					acn.leftCountry = new Country();
+					acn.leftCountry.name = (String) leftN.getProperty("countryName");
+					acn.rightCountry = new Country();
+					acn.rightCountry.name = (String) rightN.getProperty("countryName");
+					ac.add(acn);
+				}else if(m =="Land"){
+					LandConnection lcn = new LandConnection();
+					lcn.leftCountry = new Country();
+					lcn.leftCountry.name = (String) leftN.getProperty("countryName");
+					lcn.rightCountry = new Country();
+					lcn.rightCountry.name = (String) rightN.getProperty("countryName");
+					ac.add(lcn);
+				}else if(m == "Ocean"){
+					OceanConnection ocn = new OceanConnection();
+					ocn.leftCountry = new Country();
+					ocn.leftCountry.name = (String) leftN.getProperty("countryName");
+					ocn.rightCountry = new Country();
+					ocn.rightCountry.name = (String) rightN.getProperty("countryName");
+					ac.add(ocn);
+				}
 			}
+			tx.success();
 		}
 		return ac;
 	}
 	
-	
+	//pass
 	public Country getNodeByName(String cName){
 		Label label = DynamicLabel.label( "Country" );
 		ArrayList<Node> countryNodes = new ArrayList<>();
@@ -113,20 +120,24 @@ public class OurNeo4j {
             
         }
 		Country c = new Country();
-		c.name = (String) countryNodes.get(0).getProperty( "countryName" );
+		try ( Transaction tx = graphDb.beginTx()){
+			c.name = (String) countryNodes.get(0).getProperty( "countryName" );
+			tx.success();
+		}
 		
 		return c;
 	}
 	
-	public boolean startDatabase(){
-		try ( Transaction tx = graphDb.beginTx() )
-        {
-            
-            tx.success();
-        }
-		return false;
-	}
+//	public boolean startDatabase(){
+//		try ( Transaction tx = graphDb.beginTx() )
+//        {
+//            
+//            tx.success();
+//        }
+//		return false;
+//	}
 	
+	//pass
 	public long createNode(String cName){
 		Node cNode;
 		try ( Transaction tx = graphDb.beginTx() )
@@ -140,11 +151,16 @@ public class OurNeo4j {
 		return cNode.getId();
 	}
 	
+	//pass
 	public void updateNode(long cId, String p,String value){
-		Node cNode = graphDb.getNodeById( cId );
-		cNode.setProperty(p, value);
+		try ( Transaction tx = graphDb.beginTx() ){
+			Node cNode = graphDb.getNodeById( cId );
+				cNode.setProperty(p, value);
+				tx.success();
+		}
 	}
 	
+	//pass
 	public long createRelationship(long id1, long id2){
 		Relationship r;
 		try ( Transaction tx = graphDb.beginTx() )
@@ -157,6 +173,7 @@ public class OurNeo4j {
 		return r.getId();
 	}
 	
+	//pass
 	public void updateRelationship(long id,String p,String value){
 		try ( Transaction tx = graphDb.beginTx() )
         {
@@ -166,6 +183,7 @@ public class OurNeo4j {
         }
 	}
 	
+	//pass	
 	public void createDb()
     {
         deleteFileOrDirectory( new File( DB_PATH ) );
@@ -173,14 +191,11 @@ public class OurNeo4j {
         graphDb = new GraphDatabaseFactory().newEmbeddedDatabase( DB_PATH );
         registerShutdownHook( graphDb );
         // END SNIPPET: startDb
-
+        engine = new ExecutionEngine( graphDb );
         // START SNIPPET: transaction
         IndexDefinition indexDefinition;
         try ( Transaction tx = graphDb.beginTx() )
-        {
-        	
-            
-
+        {   
         	Schema schema = graphDb.schema();
         	indexDefinition = schema.indexFor( DynamicLabel.label( "Country" ) )
                         .on( "countryName" )
@@ -229,4 +244,28 @@ public class OurNeo4j {
         }
     }
 	
+	//pass
+	public void shutDownDb(){
+		 System.out.println();
+	     System.out.println( "Shutting down database ..." );
+	     // START SNIPPET: shutdownServer
+	     graphDb.shutdown();
+	     // END SNIPPET: shutdownServer
+	}
+	
+	//pass
+	public void deleteNodeById(long id){
+		try ( Transaction tx = graphDb.beginTx() ){
+			graphDb.getNodeById(id).delete();
+			tx.success();
+		}
+	}
+	
+	//pass
+	public void loadDb(){
+		graphDb = new GraphDatabaseFactory().newEmbeddedDatabase( DB_PATH );
+        registerShutdownHook( graphDb );
+        engine = new ExecutionEngine( graphDb );
+        
+	}
 }
