@@ -7,29 +7,29 @@ public class InCountrySpread extends Spread{
 
     public int spread(String density, String location, int population, int infectedPopulation){
         double probability = 0;
-        switch (density){
-            case "high":
+        switch (density.charAt(0)){
+            case 'h':
                 probability = 0.05 + 0.03 * inCountrySpreadLevel;
                 break;
-            case "mid":
-                probability = 0.05 + 0.02 * inCountrySpreadLevel
+            case 'm':
+                probability = 0.05 + 0.02 * inCountrySpreadLevel;
                 break;
-            case "low":
-                probability = 0.05 + 0.01 * inCountrySpreadLevel
+            case 'l':
+                probability = 0.05 + 0.01 * inCountrySpreadLevel;
                 break;
             default:
                 break;
         }
 
-        switch (location){
-            case "tropical":
+        switch (location.charAt(1)){
+            case 'r':
                 probability -= (3-hotResistance) * 0.01;
                 break;
-            case "temperate":
+            case 'e':
                 probability -= (3-hotResistance) * 0.005 + (3-coldResistance) * 0.005;
                 break;
-            case "boreal":
-                probability -= (3-coldResistance) * 0.01
+            case 'o':
+                probability -= (3-coldResistance) * 0.01;
         }
 
         int probInfected = (int)(probability * infectedPopulation);
