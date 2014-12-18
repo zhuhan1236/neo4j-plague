@@ -1,0 +1,12 @@
+type,country1,country2,property
+land,China,Russia,30
+air,China,America,0.8
+air,China,Australia,0.6
+ocean,China,Australia,0.2
+ocean,Japan,China,0.4
+ocean,Japan,America,0.3
+air,Japan,Russia,0.7
+air,Japan,America,0.8
+air,Russia,America,0.5
+ocean,Russia,America,0.2
+air,America,Australia,0.7

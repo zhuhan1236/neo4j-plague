@@ -27,7 +27,7 @@ import plagueWorld.connection.LandConnection;
 import plagueWorld.connection.OceanConnection;
 
 public class OurNeo4j {
-	private static final String DB_PATH = "/Users/yingapple/Documents/neo4j data files/plague";
+	private static final String DB_PATH = "./data/plague";
 	GraphDatabaseService graphDb;
 	Relationship relationship;
 	ExecutionEngine engine;
