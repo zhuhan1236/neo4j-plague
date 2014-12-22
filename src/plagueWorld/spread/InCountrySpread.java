@@ -32,8 +32,14 @@ public class InCountrySpread extends Spread{
                 probability -= (3-coldResistance) * 0.01;
         }
 
-        int probInfected = (int)(probability * infectedPopulation);
+        double probInfected = probability * infectedPopulation;
+        if(probInfected < 1){
+            return java.lang.Math.random() < probInfected ? 1 : 0;
+        }
         return (int)(probInfected * (1 - (float) infectedPopulation / population));
     }
 
+    public int spread(double f, int population, int infectedPopulation){
+        return 0;
+    }
 }

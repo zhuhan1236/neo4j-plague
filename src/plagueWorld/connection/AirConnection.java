@@ -7,4 +7,8 @@ import plagueWorld.spread.AirSpread;
  */
 public class AirConnection extends Connection{
     public double flightFrequency;
+
+    public double getFrequency(){
+        return flightFrequency;
+    }
 }

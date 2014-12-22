@@ -2,6 +2,7 @@ package model;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
@@ -27,7 +28,8 @@ import plagueWorld.connection.LandConnection;
 import plagueWorld.connection.OceanConnection;
 
 public class OurNeo4j {
-	private static final String DB_PATH = "./data/plague";
+	private static final String DB_PATH = "data/plague";
+	private HashMap<String, Country> allCountry = new HashMap<>();
 	GraphDatabaseService graphDb;
 	Relationship relationship;
 	ExecutionEngine engine;
@@ -55,7 +57,12 @@ public class OurNeo4j {
                 Country newC = new Country();
                 //need id shuxing
                 newC.name = (String) node.getProperty("countryName");
+				newC.id = node.getId();
+				newC.population = Integer.parseInt((String) node.getProperty("population"));
+				newC.location = (String) node.getProperty("location");
+				newC.populationDensity = (String) node.getProperty("density");
                 ac.add(newC);
+				allCountry.put(newC.name, newC);
             }
             // END SNIPPET: items
         }
@@ -75,27 +82,24 @@ public class OurNeo4j {
 				Relationship temp = rs.next();
 				Node leftN = temp.getStartNode();
 				Node rightN = temp.getEndNode();
-				m = (String) temp.getProperty("connectionMethod");
-				if (m == "Air"){
+				m = (String) temp.getProperty("type");
+				if (m.equals("air")){
 					AirConnection acn = new AirConnection();
-					acn.leftCountry = new Country();
-					acn.leftCountry.name = (String) leftN.getProperty("countryName");
-					acn.rightCountry = new Country();
-					acn.rightCountry.name = (String) rightN.getProperty("countryName");
+					acn.leftCountry = allCountry.get(leftN.getProperty("countryName"));
+					acn.rightCountry = allCountry.get(rightN.getProperty("countryName"));
+					acn.flightFrequency = Double.parseDouble((String)temp.getProperty("property"));
 					ac.add(acn);
-				}else if(m =="Land"){
+				}else if(m.equals("land")){
 					LandConnection lcn = new LandConnection();
-					lcn.leftCountry = new Country();
-					lcn.leftCountry.name = (String) leftN.getProperty("countryName");
-					lcn.rightCountry = new Country();
-					lcn.rightCountry.name = (String) rightN.getProperty("countryName");
+					lcn.leftCountry = allCountry.get(leftN.getProperty("countryName"));
+					lcn.rightCountry = allCountry.get(rightN.getProperty("countryName"));
+					lcn.contactFrequency = Double.parseDouble((String)temp.getProperty("property"));
 					ac.add(lcn);
-				}else if(m == "Ocean"){
+				}else if(m.equals("ocean")){
 					OceanConnection ocn = new OceanConnection();
-					ocn.leftCountry = new Country();
-					ocn.leftCountry.name = (String) leftN.getProperty("countryName");
-					ocn.rightCountry = new Country();
-					ocn.rightCountry.name = (String) rightN.getProperty("countryName");
+					ocn.leftCountry = allCountry.get(leftN.getProperty("countryName"));
+					ocn.rightCountry = allCountry.get(rightN.getProperty("countryName"));
+					ocn.shipFrequency = Double.parseDouble((String)temp.getProperty("property"));
 					ac.add(ocn);
 				}
 			}
@@ -234,7 +238,7 @@ public class OurNeo4j {
 	public void loadRelationshipByCSV(String fileName){
 		try ( Transaction tx = graphDb.beginTx() )
 		{
-			engine.execute("LOAD CSV WITH HEADERS FROM '" + fileName + "' AS line MATCH (c1:Country { countryName: line.country1}), (c2:Country { countryName: line.country2}) CREATE (c1)-[:Arrived {type:Line.type,property:line.property}]->(c2)");
+			engine.execute("LOAD CSV WITH HEADERS FROM '" + fileName + "' AS line MATCH (c1:Country { countryName: line.country1}), (c2:Country { countryName: line.country2}) CREATE (c1)-[:Arrived {type:line.type,property:line.property}]->(c2)");
 			tx.success();
 		}
 	}
@@ -291,6 +295,5 @@ public class OurNeo4j {
 		graphDb = new GraphDatabaseFactory().newEmbeddedDatabase( DB_PATH );
         registerShutdownHook( graphDb );
         engine = new ExecutionEngine( graphDb );
-        
 	}
 }

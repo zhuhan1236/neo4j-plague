@@ -10,4 +10,6 @@ public abstract class Spread {
     public static int waterSpreadLevel = 1;
     public static int landSpreadLevel = 1;
     public static int inCountrySpreadLevel = 1;
+
+    public abstract int spread(double f, int population, int infectedPopulation);
 }

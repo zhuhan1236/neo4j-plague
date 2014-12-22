@@ -7,4 +7,8 @@ import plagueWorld.spread.LandSpread;
  */
 public class LandConnection extends Connection{
     public double contactFrequency;
+
+    public double getFrequency(){
+        return contactFrequency;
+    }
 }

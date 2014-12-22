@@ -6,13 +6,8 @@ package view;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.util.Calendar;
-import java.util.Date;
-
 import javax.swing.*;
 
-import plagueWorld.*;
-import model.*;
 
 public class PlagueWorldGUI extends JFrame{
     public PlagueWorldGUI gui;
@@ -21,22 +16,19 @@ public class PlagueWorldGUI extends JFrame{
     public JButton loadB;
 
     public JButton infectB;
-    public String infectSourceData;
     public JLabel infectionSourceL;
     public JTextField infectionSourceTF;
 
     public JButton timeB;
-    public String timeData;
     public JLabel timeL;
+    public JLabel timeL2;
     public JTextField timeTF;
 
     public JLabel infectListL;
-    public String[] infectListData;
     public JList infectLi;
     public JScrollPane infectSP;
 
     public JLabel connectionListL;
-    public String[] connectionListData;
     public JList connectionLi;
     public JScrollPane connectionSP;
 
@@ -52,13 +44,18 @@ public class PlagueWorldGUI extends JFrame{
         timeL = new JLabel("skip days");
         infectListL = new JLabel("plague infection");
         connectionListL = new JLabel("world connection");
+        timeL2 = new JLabel("0");
 
         infectionSourceTF = new JTextField("Japan", 20);
+        infectionSourceTF.setEnabled(false);
         timeTF = new JTextField("1", 10);
+        timeTF.setEnabled(false);
 
         loadB = new JButton("load map");
         infectB = new JButton("infect");
+        infectB.setEnabled(false);
         timeB = new JButton("go");
+        timeB.setEnabled(false);
 
         infectLi = new JList();
         connectionLi = new JList();
@@ -110,9 +107,14 @@ public class PlagueWorldGUI extends JFrame{
                         1, 2, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
                         GridBagConstraints.NONE,
                         new Insets(5, 0, 0, 20), 0, 0));
-        operateP.add(timeB,
+        operateP.add(timeL2,
                 new GridBagConstraints(
                         2, 2, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
+                        GridBagConstraints.NONE,
+                        new Insets(5, 0, 0, 20), 0, 0));
+        operateP.add(timeB,
+                new GridBagConstraints(
+                        3, 2, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
                         GridBagConstraints.NONE,
                         new Insets(5, 20, 0, 0), 0, 0));
 
@@ -146,31 +148,51 @@ public class PlagueWorldGUI extends JFrame{
         timeBRegister();
     }
 
-    public void loadBRegister(){
+    private void loadBRegister(){
         loadB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
-                plagueWorld.loadDatabase();
-                loadB.setEnabled(false);
+                if(plagueWorld.loadDatabase()){
+                    loadB.setEnabled(false);
+                    infectB.setEnabled(true);
+                    infectionSourceTF.setEnabled(true);
+                }
+                else{
+                    showDialog("load error!");
+                }
             }
         });
     }
 
-    public void infectBRegister(){
+    private void infectBRegister(){
         infectB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                plagueWorld.infectCountry(infectionSourceTF.getText());
-                infectB.setEnabled(false);
-                infectionSourceTF.setEnabled(false);
+                if(plagueWorld.infectCountry(infectionSourceTF.getText())){
+                    infectB.setEnabled(false);
+                    infectionSourceTF.setEnabled(false);
+                    timeB.setEnabled(true);
+                    timeTF.setEnabled(true);
+                }
+                else{
+                    showDialog("wrong country name!");
+                }
             }
         });
     }
 
-    public void timeBRegister(){
+    private void timeBRegister(){
         timeB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 plagueWorld.go(Integer.parseInt(timeTF.getText()));
             }
         });
+    }
+
+    public void showDialog(String msg){
+        JOptionPane.showMessageDialog(frame, msg, "message", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    public void setTime(int time){
+        timeL2.setText(Integer.toString(time));
     }
 }

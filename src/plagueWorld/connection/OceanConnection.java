@@ -7,4 +7,8 @@ import plagueWorld.spread.WaterSpread;
  */
 public class OceanConnection extends Connection{
     public double shipFrequency;
+
+    public double getFrequency(){
+        return shipFrequency;
+    }
 }
