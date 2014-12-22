@@ -217,21 +217,26 @@ public class OurNeo4j {
 	public void loadCountryByCSV(String fileName){
 		try ( Transaction tx = graphDb.beginTx() )
 		{
-			engine.execute("LOAD CSV FROM '" + fileName + "' AS line CREATE (:Country { countryName: line[0], population: line[1], location:line[2],density:line[3]})");
+			engine.execute("LOAD CSV WITH HEADERS FROM '" + fileName + "' AS line CREATE (:Country { countryName: line.name, population: line.population, location:line.location,density:line.density})");
 			tx.success();
 		}
 	}
 	
-	public void loadPlagueByCVS(String fileName){
-		try ( Transaction tx = graphDb.beginTx() )
-		{
-			engine.execute("LOAD CSV FROM '" + fileName + "' AS line CREATE (:Plague { countryName: line[0], population: line[1], location:line[2],density:line[3]})");
-			tx.success();
-		}
-	}
+//	public void loadPlagueByCVS(String fileName){
+//		try ( Transaction tx = graphDb.beginTx() )
+//		{
+//			engine.execute("LOAD CSV FROM '" + fileName + "' AS line CREATE (:Plague { countryName: line[0], population: line[1], location:line[2],density:line[3]})");
+//			tx.success();
+//		}
+//	}
+	//fileName needs to add "file://"
 	
 	public void loadRelationshipByCSV(String fileName){
-		
+		try ( Transaction tx = graphDb.beginTx() )
+		{
+			engine.execute("LOAD CSV WITH HEADERS FROM '" + fileName + "' AS line MATCH (c1:Country { countryName: line.country1}), (c2:Country { countryName: line.country2}) CREATE (c1)-[:Arrived {type:Line.type,property:line.property}]->(c2)");
+			tx.success();
+		}
 	}
 	
 	private static void registerShutdownHook( final GraphDatabaseService graphDb )
