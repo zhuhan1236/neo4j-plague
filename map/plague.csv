@@ -1,7 +1,7 @@
-property,value
-coldResistance,1
-hotResistance,1
-airSpreadLevel,1
-waterSpreadLevel,1
-landSpreadLevel,1
-inCountrySpreadLevel,1
+"property","value"
+"coldResistance","1"
+"hotResistance","1"
+"airSpreadLevel","1"
+"waterSpreadLevel","1"
+"landSpreadLevel","1"
+"inCountrySpreadLevel","1"
