@@ -214,6 +214,26 @@ public class OurNeo4j {
         // END SNIPPET: transaction
     }
 	
+	public void loadCountryByCSV(String fileName){
+		try ( Transaction tx = graphDb.beginTx() )
+		{
+			engine.execute("LOAD CSV FROM '" + fileName + "' AS line CREATE (:Country { countryName: line[0], population: line[1], location:line[2],density:line[3]})");
+			tx.success();
+		}
+	}
+	
+	public void loadPlagueByCVS(String fileName){
+		try ( Transaction tx = graphDb.beginTx() )
+		{
+			engine.execute("LOAD CSV FROM '" + fileName + "' AS line CREATE (:Plague { countryName: line[0], population: line[1], location:line[2],density:line[3]})");
+			tx.success();
+		}
+	}
+	
+	public void loadRelationshipByCSV(String fileName){
+		
+	}
+	
 	private static void registerShutdownHook( final GraphDatabaseService graphDb )
     {
         // Registers a shutdown hook for the Neo4j instance so that it
